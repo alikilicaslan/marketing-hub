@@ -1,0 +1,1692 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Marketing Hub</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #FAFAF8;
+    --bg2: #F3F2EE;
+    --bg3: #ECEAE4;
+    --text: #1A1917;
+    --text2: #6B6860;
+    --text3: #9C9A94;
+    --border: rgba(0,0,0,0.08);
+    --border2: rgba(0,0,0,0.13);
+    --accent: #3D6B4F;
+    --accent-bg: #EAF2EC;
+    --accent2: #B8453A;
+    --accent2-bg: #FAF0EF;
+    --accent3: #6052A8;
+    --accent3-bg: #F0EEF9;
+    --amber: #A06D24;
+    --amber-bg: #FDF5E8;
+    --blue: #1E5FA8;
+    --blue-bg: #EAF0F9;
+    --sidebar-w: 240px;
+    --font: 'DM Sans', sans-serif;
+    --mono: 'DM Mono', monospace;
+    --radius: 8px;
+    --radius-lg: 12px;
+  }
+
+  body {
+    font-family: var(--font);
+    background: var(--bg);
+    color: var(--text);
+    display: flex;
+    height: 100vh;
+    overflow: hidden;
+    font-size: 14px;
+    line-height: 1.5;
+  }
+
+  /* SIDEBAR */
+  #sidebar {
+    width: var(--sidebar-w);
+    background: var(--bg2);
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    flex-shrink: 0;
+    position: relative;
+    z-index: 10;
+  }
+
+  .sidebar-header {
+    padding: 16px 16px 8px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .workspace-name {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .workspace-icon {
+    width: 22px; height: 22px;
+    background: var(--accent);
+    border-radius: 5px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px;
+    color: white;
+    flex-shrink: 0;
+  }
+
+  .nav-section {
+    padding: 8px 8px 4px;
+  }
+
+  .nav-label {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text3);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    padding: 4px 8px;
+  }
+
+  .nav-item {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    padding: 5px 8px;
+    border-radius: var(--radius);
+    cursor: pointer;
+    font-size: 13px;
+    color: var(--text2);
+    transition: background 0.12s, color 0.12s;
+    text-decoration: none;
+    user-select: none;
+  }
+
+  .nav-item:hover { background: var(--bg3); color: var(--text); }
+  .nav-item.active { background: var(--accent-bg); color: var(--accent); font-weight: 500; }
+
+  .nav-item .icon {
+    width: 16px; height: 16px;
+    flex-shrink: 0;
+    font-size: 14px;
+    display: flex; align-items: center; justify-content: center;
+  }
+
+  .nav-sub {
+    padding-left: 20px;
+  }
+
+  .nav-toggle {
+    display: flex; align-items: center; gap: 7px;
+    padding: 5px 8px;
+    border-radius: var(--radius);
+    cursor: pointer;
+    font-size: 13px;
+    color: var(--text2);
+    transition: background 0.12s;
+    user-select: none;
+  }
+  .nav-toggle:hover { background: var(--bg3); color: var(--text); }
+
+  .toggle-arrow {
+    font-size: 10px;
+    color: var(--text3);
+    transition: transform 0.15s;
+    margin-left: auto;
+  }
+  .toggle-arrow.open { transform: rotate(90deg); }
+
+  .nav-children { display: none; }
+  .nav-children.open { display: block; }
+
+  /* MAIN CONTENT */
+  #main {
+    flex: 1;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+  }
+
+  #topbar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 24px;
+    border-bottom: 1px solid var(--border);
+    background: var(--bg);
+    position: sticky;
+    top: 0;
+    z-index: 5;
+  }
+
+  .breadcrumb {
+    font-size: 13px;
+    color: var(--text3);
+    display: flex; align-items: center; gap: 6px;
+  }
+
+  .breadcrumb span { color: var(--text2); }
+  .breadcrumb span:last-child { color: var(--text); font-weight: 500; }
+
+  .topbar-actions {
+    margin-left: auto;
+    display: flex; gap: 8px;
+  }
+
+  .btn {
+    padding: 6px 12px;
+    border-radius: var(--radius);
+    border: 1px solid var(--border2);
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font);
+    font-size: 12px;
+    cursor: pointer;
+    transition: background 0.12s;
+  }
+  .btn:hover { background: var(--bg3); }
+  .btn.primary { background: var(--accent); color: white; border-color: var(--accent); }
+  .btn.primary:hover { background: #2d5a3f; }
+
+  .page-content {
+    padding: 40px 48px;
+    max-width: 960px;
+    width: 100%;
+  }
+
+  .page-title {
+    font-size: 28px;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 4px;
+    display: flex; align-items: center; gap: 10px;
+  }
+
+  .page-emoji { font-size: 26px; }
+
+  .page-desc {
+    font-size: 14px;
+    color: var(--text3);
+    margin-bottom: 32px;
+  }
+
+  /* SECTIONS */
+  .section {
+    margin-bottom: 32px;
+  }
+
+  .section-title {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text3);
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    margin-bottom: 10px;
+    display: flex; align-items: center; gap: 8px;
+  }
+
+  .section-title::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  /* KPI CARDS */
+  .kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+
+  .kpi-card {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 16px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .kpi-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+  }
+
+  .kpi-card.green::before { background: var(--accent); }
+  .kpi-card.red::before { background: var(--accent2); }
+  .kpi-card.purple::before { background: var(--accent3); }
+  .kpi-card.amber::before { background: var(--amber); }
+
+  .kpi-label { font-size: 11px; color: var(--text3); margin-bottom: 6px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.05em; }
+  .kpi-value { font-size: 22px; font-weight: 600; color: var(--text); }
+  .kpi-delta { font-size: 11px; margin-top: 4px; }
+  .kpi-delta.up { color: var(--accent); }
+  .kpi-delta.down { color: var(--accent2); }
+
+  /* QUICK LINKS */
+  .quick-links {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+  }
+
+  .quick-link {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 14px 16px;
+    cursor: pointer;
+    transition: border-color 0.12s, background 0.12s;
+    text-decoration: none;
+    color: var(--text);
+    display: flex; align-items: center; gap: 10px;
+  }
+
+  .quick-link:hover {
+    border-color: var(--border2);
+    background: var(--bg2);
+  }
+
+  .ql-icon {
+    width: 32px; height: 32px;
+    border-radius: var(--radius);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px;
+    flex-shrink: 0;
+  }
+
+  .ql-label { font-size: 13px; font-weight: 500; }
+  .ql-sub { font-size: 11px; color: var(--text3); }
+
+  /* DATABASE TABLE */
+  .db-header {
+    display: flex; align-items: center; gap: 10px;
+    margin-bottom: 12px;
+  }
+
+  .db-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text);
+    display: flex; align-items: center; gap: 8px;
+  }
+
+  .db-views {
+    display: flex; gap: 4px; margin-left: auto;
+  }
+
+  .view-btn {
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 12px;
+    cursor: pointer;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--text2);
+    font-family: var(--font);
+    transition: background 0.1s;
+  }
+  .view-btn.active { background: var(--bg3); color: var(--text); font-weight: 500; }
+  .view-btn:hover { background: var(--bg3); }
+
+  .add-btn {
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 12px;
+    cursor: pointer;
+    border: 1px dashed var(--border2);
+    background: transparent;
+    color: var(--text3);
+    font-family: var(--font);
+    transition: all 0.1s;
+  }
+  .add-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+  /* TABLE */
+  .db-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+  }
+
+  .db-table thead th {
+    text-align: left;
+    padding: 6px 10px;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text3);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    border-bottom: 1px solid var(--border);
+    background: var(--bg2);
+  }
+
+  .db-table thead th:first-child { border-radius: var(--radius) 0 0 0; }
+  .db-table thead th:last-child { border-radius: 0 var(--radius) 0 0; }
+
+  .db-table tbody tr {
+    border-bottom: 1px solid var(--border);
+    transition: background 0.1s;
+    cursor: pointer;
+  }
+
+  .db-table tbody tr:hover { background: var(--bg2); }
+
+  .db-table tbody td {
+    padding: 8px 10px;
+    color: var(--text);
+    vertical-align: middle;
+  }
+
+  .db-table tbody td:first-child {
+    font-weight: 500;
+  }
+
+  /* BADGES */
+  .badge {
+    display: inline-flex; align-items: center;
+    padding: 2px 8px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 500;
+    white-space: nowrap;
+  }
+
+  .badge-green { background: var(--accent-bg); color: var(--accent); }
+  .badge-red { background: var(--accent2-bg); color: var(--accent2); }
+  .badge-amber { background: var(--amber-bg); color: var(--amber); }
+  .badge-purple { background: var(--accent3-bg); color: var(--accent3); }
+  .badge-blue { background: var(--blue-bg); color: var(--blue); }
+  .badge-gray { background: var(--bg3); color: var(--text2); }
+
+  /* KANBAN BOARD */
+  .kanban {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 10px;
+  }
+
+  .kanban-col {
+    background: var(--bg2);
+    border-radius: var(--radius-lg);
+    padding: 12px;
+    min-height: 200px;
+  }
+
+  .kanban-col-header {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text2);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-bottom: 10px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+
+  .kanban-count {
+    background: var(--bg3);
+    color: var(--text3);
+    font-size: 10px;
+    padding: 1px 6px;
+    border-radius: 10px;
+  }
+
+  .kanban-card {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 10px;
+    margin-bottom: 6px;
+    cursor: pointer;
+    transition: border-color 0.12s;
+    font-size: 12px;
+  }
+
+  .kanban-card:hover { border-color: var(--border2); }
+
+  .kanban-card-title { font-weight: 500; margin-bottom: 4px; }
+  .kanban-card-meta { color: var(--text3); font-size: 11px; }
+
+  /* CALENDAR VIEW */
+  .cal-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 1px;
+    background: var(--border);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+  }
+
+  .cal-header {
+    background: var(--bg2);
+    text-align: center;
+    padding: 8px;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text3);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+
+  .cal-day {
+    background: var(--bg);
+    padding: 8px;
+    min-height: 80px;
+    font-size: 12px;
+  }
+
+  .cal-day.empty { background: var(--bg2); }
+  .cal-day.today { background: var(--accent-bg); }
+
+  .cal-day-num {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text3);
+    margin-bottom: 4px;
+  }
+
+  .cal-day.today .cal-day-num { color: var(--accent); }
+
+  .cal-event {
+    background: var(--accent-bg);
+    color: var(--accent);
+    border-radius: 4px;
+    padding: 1px 5px;
+    font-size: 10px;
+    font-weight: 500;
+    margin-bottom: 2px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .cal-event.red { background: var(--accent2-bg); color: var(--accent2); }
+  .cal-event.purple { background: var(--accent3-bg); color: var(--accent3); }
+  .cal-event.amber { background: var(--amber-bg); color: var(--amber); }
+
+  /* PROPERTY DOCS */
+  .prop-list {
+    background: var(--bg2);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    border: 1px solid var(--border);
+  }
+
+  .prop-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 0;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .prop-row:last-child { border-bottom: none; }
+
+  .prop-key {
+    width: 160px;
+    flex-shrink: 0;
+    padding: 9px 12px;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text2);
+    background: var(--bg2);
+    border-right: 1px solid var(--border);
+    display: flex; align-items: center; gap: 6px;
+  }
+
+  .prop-val {
+    flex: 1;
+    padding: 9px 12px;
+    font-size: 12px;
+    color: var(--text);
+    background: var(--bg);
+    display: flex; flex-wrap: wrap; gap: 4px; align-items: center;
+  }
+
+  .prop-type {
+    font-size: 10px;
+    color: var(--text3);
+    font-family: var(--mono);
+    background: var(--bg3);
+    padding: 1px 5px;
+    border-radius: 4px;
+    margin-left: auto;
+  }
+
+  /* TEMPLATE CARD */
+  .template-card {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 20px;
+  }
+
+  .template-title {
+    font-size: 15px;
+    font-weight: 600;
+    margin-bottom: 12px;
+    display: flex; align-items: center; gap: 8px;
+  }
+
+  .template-section {
+    margin-bottom: 16px;
+  }
+
+  .template-section h4 {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text2);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 8px;
+    padding-bottom: 4px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .template-item {
+    padding: 6px 10px;
+    background: var(--bg2);
+    border-radius: var(--radius);
+    font-size: 12px;
+    color: var(--text2);
+    margin-bottom: 4px;
+    display: flex; align-items: center; gap: 6px;
+  }
+
+  .template-item::before { content: '↳'; color: var(--text3); }
+
+  /* INFO BOX */
+  .info-box {
+    background: var(--blue-bg);
+    border: 1px solid rgba(30,95,168,0.15);
+    border-radius: var(--radius-lg);
+    padding: 14px 16px;
+    font-size: 13px;
+    color: var(--blue);
+    margin-bottom: 16px;
+    display: flex; gap: 10px; align-items: flex-start;
+  }
+
+  .info-box strong { font-weight: 600; display: block; margin-bottom: 2px; }
+
+  /* HOLIDAY TABLE */
+  .holiday-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  .holiday-list {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+  }
+
+  .holiday-list-header {
+    background: var(--bg2);
+    padding: 8px 12px;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--text2);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .holiday-item {
+    padding: 7px 12px;
+    font-size: 12px;
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .holiday-item:last-child { border-bottom: none; }
+
+  .holiday-date { color: var(--text3); font-family: var(--mono); font-size: 11px; }
+
+  /* SOP CARDS */
+  .sop-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+
+  .sop-card {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 16px;
+    cursor: pointer;
+    transition: border-color 0.12s;
+  }
+  .sop-card:hover { border-color: var(--border2); }
+
+  .sop-card-title {
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 6px;
+    display: flex; align-items: center; gap: 8px;
+  }
+
+  .sop-card-desc { font-size: 12px; color: var(--text2); }
+
+  .sop-steps {
+    margin-top: 10px;
+    display: flex; flex-direction: column; gap: 3px;
+  }
+
+  .sop-step {
+    font-size: 11px;
+    color: var(--text3);
+    padding: 3px 0;
+    display: flex; align-items: center; gap: 6px;
+  }
+
+  .step-num {
+    width: 16px; height: 16px;
+    background: var(--bg3);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 9px;
+    font-weight: 600;
+    flex-shrink: 0;
+    color: var(--text2);
+  }
+
+  /* REPORTING */
+  .report-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 2fr;
+    gap: 12px;
+    align-items: center;
+  }
+
+  /* PAGE CONTENT HIDDEN/SHOWN */
+  .page { display: none; }
+  .page.active { display: block; }
+
+  /* DIVIDER */
+  .divider {
+    height: 1px;
+    background: var(--border);
+    margin: 24px 0;
+  }
+
+  /* CALLOUT */
+  .callout {
+    background: var(--bg2);
+    border-radius: var(--radius-lg);
+    padding: 14px 16px;
+    font-size: 13px;
+    color: var(--text2);
+    display: flex; gap: 10px; align-items: flex-start;
+    margin-bottom: 16px;
+  }
+
+  .callout-icon { font-size: 18px; }
+
+  /* FUNNEL */
+  .funnel {
+    display: flex; gap: 8px;
+    align-items: stretch;
+  }
+
+  .funnel-stage {
+    flex: 1;
+    background: var(--bg2);
+    border-radius: var(--radius-lg);
+    padding: 14px;
+    text-align: center;
+    border: 1px solid var(--border);
+  }
+
+  .funnel-label { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.07em; color: var(--text3); margin-bottom: 4px; }
+  .funnel-name { font-size: 13px; font-weight: 500; color: var(--text); }
+  .funnel-arrow { font-size: 16px; color: var(--text3); display: flex; align-items: center; }
+
+  /* CHART BAR */
+  .bar-chart {
+    display: flex; align-items: flex-end; gap: 8px; height: 80px; margin: 8px 0;
+  }
+
+  .bar-col { display: flex; flex-direction: column; align-items: center; gap: 3px; flex: 1; }
+  .bar-fill { width: 100%; border-radius: 4px 4px 0 0; background: var(--accent); transition: opacity 0.1s; }
+  .bar-fill:hover { opacity: 0.75; }
+  .bar-label { font-size: 9px; color: var(--text3); text-align: center; }
+
+  /* TOGGLE STATES */
+  .section-toggle { cursor: pointer; user-select: none; }
+  .section-body { overflow: hidden; transition: max-height 0.2s; }
+
+  /* scrollbar */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--bg3); border-radius: 3px; }
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<nav id="sidebar">
+  <div class="sidebar-header">
+    <div class="workspace-name">
+      <div class="workspace-icon">M</div>
+      Marketing Hub
+    </div>
+  </div>
+
+  <div class="nav-section">
+    <div class="nav-item active" onclick="showPage('dashboard')">
+      <span class="icon">🏠</span> Dashboard
+    </div>
+  </div>
+
+  <div class="nav-section">
+    <div class="nav-label">Planung</div>
+    <div class="nav-item" onclick="showPage('kalender')">
+      <span class="icon">📅</span> Marketing Kalender
+    </div>
+    <div class="nav-item" onclick="showPage('kampagnen')">
+      <span class="icon">🚀</span> Kampagnen &amp; Launches
+    </div>
+    <div class="nav-item" onclick="showPage('content')">
+      <span class="icon">📁</span> Content Library
+    </div>
+  </div>
+
+  <div class="nav-section">
+    <div class="nav-label">Kanäle</div>
+
+    <div class="nav-toggle" onclick="toggleNav('nav-kanaele')">
+      <span class="icon">📡</span>
+      <span style="font-size:13px;color:var(--text2)">Kanäle</span>
+      <span class="toggle-arrow" id="arrow-kanaele">▶</span>
+    </div>
+    <div class="nav-children nav-sub" id="nav-kanaele">
+      <div class="nav-item" onclick="showPage('instagram')"><span class="icon">📸</span> Instagram</div>
+      <div class="nav-item" onclick="showPage('newsletter')"><span class="icon">📧</span> Newsletter</div>
+      <div class="nav-item" onclick="showPage('whatsapp')"><span class="icon">💬</span> WhatsApp</div>
+      <div class="nav-item" onclick="showPage('skool')"><span class="icon">🎓</span> Skool</div>
+      <div class="nav-item" onclick="showPage('ads')"><span class="icon">📢</span> Meta Ads</div>
+      <div class="nav-item" onclick="showPage('seo')"><span class="icon">🔍</span> SEO &amp; Blog</div>
+    </div>
+
+    <div class="nav-toggle" onclick="toggleNav('nav-produkt')">
+      <span class="icon">📦</span>
+      <span style="font-size:13px;color:var(--text2)">Produkt &amp; Branding</span>
+      <span class="toggle-arrow" id="arrow-produkt">▶</span>
+    </div>
+    <div class="nav-children nav-sub" id="nav-produkt">
+      <div class="nav-item" onclick="showPage('produkte')"><span class="icon">📦</span> Produkte</div>
+      <div class="nav-item" onclick="showPage('packaging')"><span class="icon">🎁</span> Packaging</div>
+      <div class="nav-item" onclick="showPage('naming')"><span class="icon">✏️</span> Naming</div>
+    </div>
+  </div>
+
+  <div class="nav-section">
+    <div class="nav-label">Analyse &amp; Prozesse</div>
+    <div class="nav-item" onclick="showPage('shop')"><span class="icon">🛒</span> Shop Optimierung</div>
+    <div class="nav-item" onclick="showPage('swipe')"><span class="icon">🗂️</span> Swipe File</div>
+    <div class="nav-item" onclick="showPage('sops')"><span class="icon">📋</span> SOPs &amp; Prozesse</div>
+    <div class="nav-item" onclick="showPage('reporting')"><span class="icon">📊</span> Reporting</div>
+    <div class="nav-item" onclick="showPage('feiertage')"><span class="icon">🗓️</span> Feiertage</div>
+  </div>
+</nav>
+
+<!-- MAIN -->
+<div id="main">
+  <div id="topbar">
+    <div class="breadcrumb" id="breadcrumb">
+      <span>Marketing Hub</span> <span style="color:var(--text3)">›</span> <span>Dashboard</span>
+    </div>
+    <div class="topbar-actions">
+      <button class="btn" onclick="alert('Filter anwenden')">⚙ Filter</button>
+      <button class="btn primary" onclick="alert('Neuen Eintrag erstellen')">+ Neu</button>
+    </div>
+  </div>
+
+  <!-- ========== DASHBOARD ========== -->
+  <div id="page-dashboard" class="page active">
+    <div class="page-content">
+      <div class="page-title"><span class="page-emoji">🏠</span> Dashboard</div>
+      <div class="page-desc">Übersicht aller wichtigen Kennzahlen und schnelle Navigation zu deinen Bereichen.</div>
+
+      <div class="section-title">KPIs — Diese Woche</div>
+      <div class="kpi-grid">
+        <div class="kpi-card green">
+          <div class="kpi-label">Umsatz</div>
+          <div class="kpi-value">€12.480</div>
+          <div class="kpi-delta up">↑ +18% ggü. Vorwoche</div>
+        </div>
+        <div class="kpi-card amber">
+          <div class="kpi-label">ROAS</div>
+          <div class="kpi-value">3,4x</div>
+          <div class="kpi-delta up">↑ +0,4 ggü. Ziel</div>
+        </div>
+        <div class="kpi-card purple">
+          <div class="kpi-label">Aktive Kampagnen</div>
+          <div class="kpi-value">4</div>
+          <div class="kpi-delta" style="color:var(--text3)">2 in Planung</div>
+        </div>
+        <div class="kpi-card red">
+          <div class="kpi-label">Newsletter Open Rate</div>
+          <div class="kpi-value">28,3%</div>
+          <div class="kpi-delta down">↓ −2,1% ggü. letzter</div>
+        </div>
+      </div>
+
+      <div class="section-title">Schnell-Navigation</div>
+      <div class="quick-links">
+        <div class="quick-link" onclick="showPage('kalender')">
+          <div class="ql-icon" style="background:var(--accent-bg)">📅</div>
+          <div><div class="ql-label">Kalender</div><div class="ql-sub">Marketing Planung</div></div>
+        </div>
+        <div class="quick-link" onclick="showPage('kampagnen')">
+          <div class="ql-icon" style="background:var(--accent2-bg)">🚀</div>
+          <div><div class="ql-label">Kampagnen</div><div class="ql-sub">Launches &amp; Sales</div></div>
+        </div>
+        <div class="quick-link" onclick="showPage('content')">
+          <div class="ql-icon" style="background:var(--accent3-bg)">📁</div>
+          <div><div class="ql-label">Content Library</div><div class="ql-sub">Assets &amp; Creatives</div></div>
+        </div>
+        <div class="quick-link" onclick="showPage('ads')">
+          <div class="ql-icon" style="background:var(--amber-bg)">📢</div>
+          <div><div class="ql-label">Ads</div><div class="ql-sub">Meta Kampagnen</div></div>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="section-title">Diese Woche — Geplante Inhalte</div>
+      <table class="db-table">
+        <thead>
+          <tr>
+            <th>Inhalt</th><th>Kanal</th><th>Datum</th><th>Status</th><th>Verantwortlich</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Summer Sale Ankündigung</td>
+            <td><span class="badge badge-purple">Instagram</span></td>
+            <td>Mo, 23.06.</td>
+            <td><span class="badge badge-amber">Geplant</span></td>
+            <td>Anna M.</td>
+          </tr>
+          <tr>
+            <td>Newsletter KW25</td>
+            <td><span class="badge badge-blue">Newsletter</span></td>
+            <td>Di, 24.06.</td>
+            <td><span class="badge badge-green">Live</span></td>
+            <td>Tom K.</td>
+          </tr>
+          <tr>
+            <td>WhatsApp Broadcast</td>
+            <td><span class="badge badge-green">WhatsApp</span></td>
+            <td>Mi, 25.06.</td>
+            <td><span class="badge badge-gray">Idee</span></td>
+            <td>—</td>
+          </tr>
+          <tr>
+            <td>Produkt Reel Launch</td>
+            <td><span class="badge badge-purple">Instagram</span></td>
+            <td>Fr, 27.06.</td>
+            <td><span class="badge badge-red">In Arbeit</span></td>
+            <td>Anna M.</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="divider"></div>
+
+      <div class="section-title">Aktive Kampagnen</div>
+      <table class="db-table">
+        <thead>
+          <tr><th>Kampagne</th><th>Typ</th><th>Zeitraum</th><th>Budget</th><th>Status</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Sommer Sale 2025</td>
+            <td><span class="badge badge-amber">Sale</span></td>
+            <td>01.07 – 15.07</td>
+            <td>€2.500</td>
+            <td><span class="badge badge-green">Live</span></td>
+          </tr>
+          <tr>
+            <td>Produkt Launch X</td>
+            <td><span class="badge badge-purple">Launch</span></td>
+            <td>20.07 – 31.07</td>
+            <td>€5.000</td>
+            <td><span class="badge badge-amber">Planung</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ========== MARKETING KALENDER ========== -->
+  <div id="page-kalender" class="page">
+    <div class="page-content">
+      <div class="page-title"><span class="page-emoji">📅</span> Marketing Kalender</div>
+      <div class="page-desc">Zentrale Datenbank für alle geplanten Inhalte, Posts und Kampagnen.</div>
+
+      <div class="db-header">
+        <div class="db-title">📅 Marketing Kalender</div>
+        <div class="db-views">
+          <button class="view-btn active" onclick="switchView('cal-view-cal')">📅 Kalender</button>
+          <button class="view-btn" onclick="switchView('cal-view-board')">🗂 Board</button>
+          <button class="view-btn" onclick="switchView('cal-view-table')">☰ Tabelle</button>
+        </div>
+        <button class="add-btn" style="margin-left:8px" onclick="alert('Neuer Eintrag')">+ Neuer Eintrag</button>
+      </div>
+
+      <!-- KALENDER VIEW -->
+      <div id="cal-view-cal">
+        <div class="cal-grid">
+          <div class="cal-header">Mo</div><div class="cal-header">Di</div><div class="cal-header">Mi</div>
+          <div class="cal-header">Do</div><div class="cal-header">Fr</div><div class="cal-header">Sa</div><div class="cal-header">So</div>
+          <div class="cal-day empty"></div><div class="cal-day empty"></div>
+          <div class="cal-day"><div class="cal-day-num">1</div></div>
+          <div class="cal-day"><div class="cal-day-num">2</div></div>
+          <div class="cal-day"><div class="cal-day-num">3</div></div>
+          <div class="cal-day"><div class="cal-day-num">4</div></div>
+          <div class="cal-day"><div class="cal-day-num">5</div></div>
+          <div class="cal-day"><div class="cal-day-num">6</div></div>
+          <div class="cal-day"><div class="cal-day-num">7</div></div>
+          <div class="cal-day"><div class="cal-day-num">8</div></div>
+          <div class="cal-day"><div class="cal-day-num">9</div></div>
+          <div class="cal-day"><div class="cal-day-num">10</div><div class="cal-event">IG Post – Sale</div></div>
+          <div class="cal-day"><div class="cal-day-num">11</div><div class="cal-event amber">Singles Day ⭐</div></div>
+          <div class="cal-day"><div class="cal-day-num">12</div></div>
+          <div class="cal-day"><div class="cal-day-num">13</div></div>
+          <div class="cal-day"><div class="cal-day-num">14</div></div>
+          <div class="cal-day"><div class="cal-day-num">15</div><div class="cal-event red">Newsletter</div></div>
+          <div class="cal-day"><div class="cal-day-num">16</div></div>
+          <div class="cal-day today"><div class="cal-day-num">17</div><div class="cal-event">Reel Launch</div><div class="cal-event purple">WhatsApp</div></div>
+          <div class="cal-day"><div class="cal-day-num">18</div></div>
+          <div class="cal-day"><div class="cal-day-num">19</div></div>
+          <div class="cal-day"><div class="cal-day-num">20</div></div>
+          <div class="cal-day"><div class="cal-day-num">21</div><div class="cal-event red">Blog Post</div></div>
+          <div class="cal-day"><div class="cal-day-num">22</div></div>
+          <div class="cal-day"><div class="cal-day-num">23</div></div>
+          <div class="cal-day"><div class="cal-day-num">24</div><div class="cal-event amber">Black Friday Pre</div></div>
+          <div class="cal-day"><div class="cal-day-num">25</div></div>
+          <div class="cal-day"><div class="cal-day-num">26</div></div>
+          <div class="cal-day"><div class="cal-day-num">27</div></div>
+          <div class="cal-day"><div class="cal-day-num">28</div></div>
+          <div class="cal-day empty"></div><div class="cal-day empty"></div>
+        </div>
+        <div style="margin-top:10px;display:flex;gap:8px;font-size:11px;color:var(--text3);">
+          <span><span class="cal-event" style="display:inline-block;margin-bottom:0">●</span> Instagram / Content</span>
+          <span><span class="cal-event red" style="display:inline-block;margin-bottom:0">●</span> Newsletter / Blog</span>
+          <span><span class="cal-event purple" style="display:inline-block;margin-bottom:0">●</span> WhatsApp / Skool</span>
+          <span><span class="cal-event amber" style="display:inline-block;margin-bottom:0">●</span> Feiertage / Events</span>
+        </div>
+      </div>
+
+      <!-- BOARD VIEW (hidden by default) -->
+      <div id="cal-view-board" style="display:none">
+        <div class="kanban">
+          <div class="kanban-col">
+            <div class="kanban-col-header">Idee <span class="kanban-count">3</span></div>
+            <div class="kanban-card"><div class="kanban-card-title">WhatsApp Broadcast</div><div class="kanban-card-meta">WhatsApp · KW25</div></div>
+            <div class="kanban-card"><div class="kanban-card-title">IG Reel Idee</div><div class="kanban-card-meta">Instagram · Kein Datum</div></div>
+            <div class="kanban-card"><div class="kanban-card-title">Blog: SEO Artikel</div><div class="kanban-card-meta">Blog · Kein Datum</div></div>
+          </div>
+          <div class="kanban-col">
+            <div class="kanban-col-header">In Arbeit <span class="kanban-count">2</span></div>
+            <div class="kanban-card"><div class="kanban-card-title">Produkt Reel Launch</div><div class="kanban-card-meta">Instagram · Fr 27.06</div></div>
+            <div class="kanban-card"><div class="kanban-card-title">Black Friday Prep</div><div class="kanban-card-meta">Ads · Nov</div></div>
+          </div>
+          <div class="kanban-col">
+            <div class="kanban-col-header">Geplant <span class="kanban-count">2</span></div>
+            <div class="kanban-card"><div class="kanban-card-title">Summer Sale Ankündigung</div><div class="kanban-card-meta">Instagram · Mo 23.06</div></div>
+            <div class="kanban-card"><div class="kanban-card-title">Skool Community Post</div><div class="kanban-card-meta">Skool · Do 26.06</div></div>
+          </div>
+          <div class="kanban-col">
+            <div class="kanban-col-header">Live <span class="kanban-count">1</span></div>
+            <div class="kanban-card"><div class="kanban-card-title">Newsletter KW25</div><div class="kanban-card-meta">Newsletter · Di 24.06</div></div>
+          </div>
+          <div class="kanban-col">
+            <div class="kanban-col-header">Abgeschlossen <span class="kanban-count">4</span></div>
+            <div class="kanban-card"><div class="kanban-card-title">Newsletter KW24</div><div class="kanban-card-meta">Newsletter · 17.06</div></div>
+            <div class="kanban-card"><div class="kanban-card-title">IG Story Ostern</div><div class="kanban-card-meta">Instagram · Apr</div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TABLE VIEW (hidden by default) -->
+      <div id="cal-view-table" style="display:none">
+        <table class="db-table">
+          <thead><tr><th>Name</th><th>Datum</th><th>Kanal</th><th>Typ</th><th>Kampagne</th><th>Status</th><th>Priorität</th><th>Person</th></tr></thead>
+          <tbody>
+            <tr><td>Summer Sale Ankündigung</td><td>23.06.2025</td><td><span class="badge badge-purple">Instagram</span></td><td>Reel</td><td>Sommer Sale</td><td><span class="badge badge-amber">Geplant</span></td><td><span class="badge badge-red">High</span></td><td>Anna</td></tr>
+            <tr><td>Newsletter KW25</td><td>24.06.2025</td><td><span class="badge badge-blue">Newsletter</span></td><td>Email</td><td>—</td><td><span class="badge badge-green">Live</span></td><td><span class="badge badge-amber">Medium</span></td><td>Tom</td></tr>
+            <tr><td>WhatsApp Broadcast</td><td>25.06.2025</td><td><span class="badge badge-green">WhatsApp</span></td><td>Broadcast</td><td>—</td><td><span class="badge badge-gray">Idee</span></td><td><span class="badge badge-gray">Low</span></td><td>—</td></tr>
+            <tr><td>Black Friday Kampagne</td><td>29.11.2025</td><td><span class="badge badge-amber">Ads</span></td><td>Ad</td><td>Black Friday</td><td><span class="badge badge-gray">Idee</span></td><td><span class="badge badge-red">High</span></td><td>Max</td></tr>
+            <tr><td>Weihnachten Newsletter</td><td>20.12.2025</td><td><span class="badge badge-blue">Newsletter</span></td><td>Email</td><td>Weihnachten</td><td><span class="badge badge-gray">Idee</span></td><td><span class="badge badge-amber">Medium</span></td><td>—</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="divider"></div>
+      <div class="section-title">Datenbank-Eigenschaften</div>
+      <div class="prop-list">
+        <div class="prop-row"><div class="prop-key">📝 Name</div><div class="prop-val">Titel des Inhalts</div><div class="prop-type" style="padding:9px 10px;background:var(--bg);font-size:10px;color:var(--text3);font-family:var(--mono);white-space:nowrap">Titel</div></div>
+        <div class="prop-row"><div class="prop-key">📆 Datum</div><div class="prop-val">Veröffentlichungsdatum</div><div class="prop-type" style="padding:9px 10px;background:var(--bg);font-size:10px;color:var(--text3);font-family:var(--mono);white-space:nowrap">Datum</div></div>
+        <div class="prop-row"><div class="prop-key">📡 Kanal</div><div class="prop-val"><span class="badge badge-purple">Instagram</span><span class="badge badge-blue">Newsletter</span><span class="badge badge-green">WhatsApp</span><span class="badge badge-amber">Skool</span><span class="badge badge-gray">Blog</span><span class="badge badge-red">Ads</span></div><div class="prop-type" style="padding:9px 10px;background:var(--bg);font-size:10px;color:var(--text3);font-family:var(--mono);white-space:nowrap">Multi-Select</div></div>
+        <div class="prop-row"><div class="prop-key">🎬 Content Typ</div><div class="prop-val"><span class="badge badge-gray">Post</span><span class="badge badge-gray">Reel</span><span class="badge badge-gray">Story</span><span class="badge badge-gray">Email</span><span class="badge badge-gray">Broadcast</span><span class="badge badge-gray">Ad</span></div><div class="prop-type" style="padding:9px 10px;background:var(--bg);font-size:10px;color:var(--text3);font-family:var(--mono);white-space:nowrap">Select</div></div>
+        <div class="prop-row"><div class="prop-key">🔄 Status</div><div class="prop-val"><span class="badge badge-gray">Idee</span><span class="badge badge-red">In Arbeit</span><span class="badge badge-amber">Geplant</span><span class="badge badge-green">Live</span></div><div class="prop-type" style="padding:9px 10px;background:var(--bg);font-size:10px;color:var(--text3);font-family:var(--mono);white-space:nowrap">Select</div></div>
+        <div class="prop-row"><div class="prop-key">🚀 Kampagne</div><div class="prop-val" style="color:var(--text3);font-size:12px">Verknüpft mit Kampagnen-Datenbank</div><div class="prop-type" style="padding:9px 10px;background:var(--bg);font-size:10px;color:var(--text3);font-family:var(--mono);white-space:nowrap">Relation</div></div>
+        <div class="prop-row"><div class="prop-key">📦 Produkt</div><div class="prop-val" style="color:var(--text3);font-size:12px">Verknüpft mit Produkte-Datenbank</div><div class="prop-type" style="padding:9px 10px;background:var(--bg);font-size:10px;color:var(--text3);font-family:var(--mono);white-space:nowrap">Relation</div></div>
+        <div class="prop-row"><div class="prop-key">⚡ Priorität</div><div class="prop-val"><span class="badge badge-gray">Low</span><span class="badge badge-amber">Medium</span><span class="badge badge-red">High</span></div><div class="prop-type" style="padding:9px 10px;background:var(--bg);font-size:10px;color:var(--text3);font-family:var(--mono);white-space:nowrap">Select</div></div>
+        <div class="prop-row"><div class="prop-key">👤 Verantwortlich</div><div class="prop-val" style="color:var(--text3);font-size:12px">Zuständige Person im Team</div><div class="prop-type" style="padding:9px 10px;background:var(--bg);font-size:10px;color:var(--text3);font-family:var(--mono);white-space:nowrap">Person</div></div>
+        <div class="prop-row"><div class="prop-key">📎 Asset</div><div class="prop-val" style="color:var(--text3);font-size:12px">Bilder, Videos, Dateien</div><div class="prop-type" style="padding:9px 10px;background:var(--bg);font-size:10px;color:var(--text3);font-family:var(--mono);white-space:nowrap">Files & Media</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== KAMPAGNEN ========== -->
+  <div id="page-kampagnen" class="page">
+    <div class="page-content">
+      <div class="page-title"><span class="page-emoji">🚀</span> Kampagnen &amp; Launches</div>
+      <div class="page-desc">Plane und tracke alle Kampagnen, Launches und Sales an einem Ort.</div>
+
+      <div class="db-header">
+        <div class="db-title">🚀 Kampagnen</div>
+        <button class="add-btn" onclick="alert('Neue Kampagne erstellen')">+ Neu</button>
+      </div>
+
+      <table class="db-table" style="margin-bottom:24px">
+        <thead><tr><th>Kampagne</th><th>Typ</th><th>Zeitraum</th><th>Budget</th><th>Ziel</th><th>Status</th></tr></thead>
+        <tbody>
+          <tr><td>Sommer Sale 2025</td><td><span class="badge badge-amber">Sale</span></td><td>01.07 – 15.07</td><td>€2.500</td><td>ROAS 4x, €15k Umsatz</td><td><span class="badge badge-green">Live</span></td></tr>
+          <tr><td>Produkt X Launch</td><td><span class="badge badge-purple">Launch</span></td><td>20.07 – 31.07</td><td>€5.000</td><td>500 Verkäufe, Waitlist</td><td><span class="badge badge-amber">Planung</span></td></tr>
+          <tr><td>Black Friday 2025</td><td><span class="badge badge-red">Sale</span></td><td>28.11 – 30.11</td><td>€8.000</td><td>Bester Tag des Jahres</td><td><span class="badge badge-gray">Planung</span></td></tr>
+          <tr><td>Brand Awareness Q3</td><td><span class="badge badge-blue">Branding</span></td><td>Jul – Sep</td><td>€1.200</td><td>Reichweite +50%</td><td><span class="badge badge-gray">Planung</span></td></tr>
+        </tbody>
+      </table>
+
+      <div class="divider"></div>
+      <div class="section-title">Template: Produkt Launch</div>
+      <div class="template-card">
+        <div class="template-title">🚀 Neuer Produkt Launch — Vorlage</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+          <div>
+            <div class="template-section">
+              <h4>Strategie</h4>
+              <div class="template-item">Zielgruppe definieren</div>
+              <div class="template-item">Problem / Desire beschreiben</div>
+              <div class="template-item">Offer &amp; Positionierung</div>
+              <div class="template-item">Messaging (Hooks &amp; Angles)</div>
+            </div>
+            <div class="template-section">
+              <h4>Funnel-Struktur</h4>
+              <div class="funnel">
+                <div class="funnel-stage" style="background:var(--amber-bg);border-color:rgba(160,109,36,0.15)"><div class="funnel-label">TOF</div><div class="funnel-name">Ads</div></div>
+                <div class="funnel-arrow">→</div>
+                <div class="funnel-stage" style="background:var(--accent3-bg);border-color:rgba(96,82,168,0.15)"><div class="funnel-label">MOF</div><div class="funnel-name">Landingpage</div></div>
+                <div class="funnel-arrow">→</div>
+                <div class="funnel-stage" style="background:var(--accent-bg);border-color:rgba(61,107,79,0.15)"><div class="funnel-label">BOF</div><div class="funnel-name">Email Flow</div></div>
+              </div>
+            </div>
+          </div>
+          <div>
+            <div class="template-section">
+              <h4>Content Plan</h4>
+              <div class="template-item">Teaser-Phase (1 Woche vor)</div>
+              <div class="template-item">Launch-Tag Content</div>
+              <div class="template-item">Follow-up &amp; Testimonials</div>
+              <div class="template-item">Last-Chance Reminders</div>
+            </div>
+            <div class="template-section">
+              <h4>Learnings &amp; Ergebnisse</h4>
+              <div class="template-item">Was hat gut funktioniert?</div>
+              <div class="template-item">Was verbessern?</div>
+              <div class="template-item">Zahlen &amp; KPIs</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== CONTENT LIBRARY ========== -->
+  <div id="page-content" class="page">
+    <div class="page-content">
+      <div class="page-title"><span class="page-emoji">📁</span> Content &amp; Asset Library</div>
+      <div class="page-desc">Alle Creatives, Videos, Copy und Designs an einem Ort.</div>
+
+      <div class="db-header">
+        <div class="db-title">📁 Content Library</div>
+        <div class="db-views">
+          <button class="view-btn active">☰ Alle</button>
+          <button class="view-btn">🏆 Winning Creatives</button>
+          <button class="view-btn">📡 Nach Kanal</button>
+          <button class="view-btn">📢 Ads only</button>
+        </div>
+        <button class="add-btn" style="margin-left:8px" onclick="alert('Asset hochladen')">+ Upload</button>
+      </div>
+
+      <table class="db-table">
+        <thead><tr><th>Name</th><th>Typ</th><th>Kanal</th><th>Kampagne</th><th>Status</th><th>Performance</th></tr></thead>
+        <tbody>
+          <tr><td>Sommer-Reel v3</td><td><span class="badge badge-red">Video</span></td><td><span class="badge badge-purple">Instagram</span></td><td>Sommer Sale</td><td><span class="badge badge-green">Live</span></td><td><span class="badge badge-green">Winner</span></td></tr>
+          <tr><td>Black Friday Banner</td><td><span class="badge badge-blue">Bild</span></td><td><span class="badge badge-amber">Ads</span></td><td>Black Friday</td><td><span class="badge badge-amber">Approved</span></td><td><span class="badge badge-gray">Test</span></td></tr>
+          <tr><td>Newsletter Copy KW25</td><td><span class="badge badge-green">Copy</span></td><td><span class="badge badge-blue">Newsletter</span></td><td>—</td><td><span class="badge badge-green">Live</span></td><td><span class="badge badge-gray">—</span></td></tr>
+          <tr><td>Produkt Hook v1</td><td><span class="badge badge-red">Video</span></td><td><span class="badge badge-amber">Ads</span></td><td>Produkt X Launch</td><td><span class="badge badge-gray">Draft</span></td><td><span class="badge badge-gray">Test</span></td></tr>
+          <tr><td>Logo Varianten Pack</td><td><span class="badge badge-blue">Bild</span></td><td><span class="badge badge-gray">Alle</span></td><td>Branding</td><td><span class="badge badge-amber">Approved</span></td><td><span class="badge badge-gray">—</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ========== INSTAGRAM ========== -->
+  <div id="page-instagram" class="page">
+    <div class="page-content">
+      <div class="page-title"><span class="page-emoji">📸</span> Instagram</div>
+      <div class="page-desc">Content-Planung, Hook Library und Skripte für Instagram.</div>
+
+      <div class="section-title">Geplante IG Posts</div>
+      <table class="db-table" style="margin-bottom:24px">
+        <thead><tr><th>Inhalt</th><th>Format</th><th>Datum</th><th>Kampagne</th><th>Status</th></tr></thead>
+        <tbody>
+          <tr><td>Summer Sale Ankündigung</td><td><span class="badge badge-purple">Reel</span></td><td>23.06.</td><td>Sommer Sale</td><td><span class="badge badge-amber">Geplant</span></td></tr>
+          <tr><td>Behind the Scenes</td><td><span class="badge badge-blue">Story</span></td><td>25.06.</td><td>—</td><td><span class="badge badge-gray">Idee</span></td></tr>
+          <tr><td>Produkt Launch Teaser</td><td><span class="badge badge-purple">Reel</span></td><td>27.06.</td><td>Produkt X</td><td><span class="badge badge-red">In Arbeit</span></td></tr>
+        </tbody>
+      </table>
+
+      <div class="divider"></div>
+      <div class="section-title">Hook Library</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:24px">
+        <div class="template-card" style="padding:12px">
+          <div style="font-size:11px;font-weight:600;color:var(--text3);margin-bottom:6px;text-transform:uppercase;letter-spacing:0.05em">Problem-Hook</div>
+          <div style="font-size:13px;color:var(--text)">"Du machst diesen Fehler gerade in deinem Marketing..."</div>
+        </div>
+        <div class="template-card" style="padding:12px">
+          <div style="font-size:11px;font-weight:600;color:var(--text3);margin-bottom:6px;text-transform:uppercase;letter-spacing:0.05em">Curiosity-Hook</div>
+          <div style="font-size:13px;color:var(--text)">"Was ich gelernt habe, nachdem wir €50k in Ads investiert haben..."</div>
+        </div>
+        <div class="template-card" style="padding:12px">
+          <div style="font-size:11px;font-weight:600;color:var(--text3);margin-bottom:6px;text-transform:uppercase;letter-spacing:0.05em">Transformation-Hook</div>
+          <div style="font-size:13px;color:var(--text)">"Von 0 auf €10k Umsatz — in 30 Tagen. So geht's."</div>
+        </div>
+        <div class="template-card" style="padding:12px">
+          <div style="font-size:11px;font-weight:600;color:var(--text3);margin-bottom:6px;text-transform:uppercase;letter-spacing:0.05em">Kontra-Hook</div>
+          <div style="font-size:13px;color:var(--text)">"Warum du KEINEN Content Calendar brauchst (Unpopular Opinion)"</div>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+      <div class="section-title">Reel Ideen</div>
+      <div class="callout"><span class="callout-icon">💡</span><div>Neue Ideen einfach hier eintragen — Format, Hook und Botschaft notieren.</div></div>
+      <table class="db-table">
+        <thead><tr><th>Idee</th><th>Hook-Typ</th><th>Priorität</th><th>Status</th></tr></thead>
+        <tbody>
+          <tr><td>5 Fehler im Email Marketing</td><td>Problem</td><td><span class="badge badge-red">High</span></td><td><span class="badge badge-gray">Idee</span></td></tr>
+          <tr><td>Tag im Leben eines E-Commerce Gründers</td><td>Curiosity</td><td><span class="badge badge-amber">Medium</span></td><td><span class="badge badge-gray">Idee</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ========== NEWSLETTER ========== -->
+  <div id="page-newsletter" class="page">
+    <div class="page-content">
+      <div class="page-title"><span class="page-emoji">📧</span> Newsletter</div>
+      <div class="page-desc">Planung, Inhalte und Performance aller Newsletter-Ausgaben.</div>
+
+      <table class="db-table" style="margin-bottom:24px">
+        <thead><tr><th>Name</th><th>Datum</th><th>Betreffzeile</th><th>Kampagne</th><th>Open Rate</th><th>CTR</th><th>Status</th></tr></thead>
+        <tbody>
+          <tr><td>KW25 – Sommer Tipps</td><td>24.06.</td><td>"3 Hacks für deinen Sommer-Sale"</td><td>Sommer Sale</td><td>28,3%</td><td>4,1%</td><td><span class="badge badge-green">Live</span></td></tr>
+          <tr><td>KW24 – Produkt Tease</td><td>17.06.</td><td>"Etwas Neues kommt..."</td><td>Produkt X</td><td>31,2%</td><td>6,8%</td><td><span class="badge badge-green">Live</span></td></tr>
+          <tr><td>KW26 – geplant</td><td>01.07.</td><td>Offen</td><td>—</td><td>—</td><td>—</td><td><span class="badge badge-gray">Idee</span></td></tr>
+        </tbody>
+      </table>
+
+      <div class="divider"></div>
+      <div class="section-title">Newsletter Template</div>
+      <div class="template-card">
+        <div class="template-title">📧 Newsletter Vorlage</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px">
+          <div class="template-section">
+            <h4>1 · Hook</h4>
+            <div class="template-item">Betreffzeile (Neugier/Nutzen)</div>
+            <div class="template-item">Preview Text (1-2 Sätze)</div>
+            <div class="template-item">Opening-Hook im Body</div>
+          </div>
+          <div class="template-section">
+            <h4>2 · Body</h4>
+            <div class="template-item">Hauptbotschaft / Story</div>
+            <div class="template-item">Mehrwert / Tipp</div>
+            <div class="template-item">Social Proof</div>
+          </div>
+          <div class="template-section">
+            <h4>3 · CTA</h4>
+            <div class="template-item">Klarer Button / Link</div>
+            <div class="template-item">Dringlichkeit</div>
+            <div class="template-item">PS-Zeile (Bonus CTA)</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== WHATSAPP ========== -->
+  <div id="page-whatsapp" class="page">
+    <div class="page-content">
+      <div class="page-title"><span class="page-emoji">💬</span> WhatsApp</div>
+      <div class="page-desc">Broadcasts, Copy-Vorlagen und Timing-Strategie für WhatsApp.</div>
+
+      <div class="callout"><span class="callout-icon">📌</span><div><strong>Timing-Strategie:</strong> Broadcasts am besten Di–Do zwischen 10–12 Uhr versenden. Freitag-Abend für Impuls-Käufe nutzen.</div></div>
+
+      <div class="section-title">Broadcast Planung</div>
+      <table class="db-table" style="margin-bottom:24px">
+        <thead><tr><th>Nachricht</th><th>Datum</th><th>Kampagne</th><th>Klickrate</th><th>Status</th></tr></thead>
+        <tbody>
+          <tr><td>Sommer Sale Reminder</td><td>25.06.</td><td>Sommer Sale</td><td>12,4%</td><td><span class="badge badge-amber">Geplant</span></td></tr>
+          <tr><td>Flash Sale – 24h</td><td>TBD</td><td>—</td><td>—</td><td><span class="badge badge-gray">Idee</span></td></tr>
+        </tbody>
+      </table>
+
+      <div class="section-title">Copy Vorlagen</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <div class="template-card" style="padding:14px">
+          <div style="font-size:11px;font-weight:600;color:var(--text3);margin-bottom:8px;text-transform:uppercase;letter-spacing:0.05em">Flash Sale Vorlage</div>
+          <div style="font-size:13px;color:var(--text);line-height:1.6">Hey [Name] 👋<br><br>Nur heute: [Produkt] mit 30% Rabatt.<br><br>→ [Link]<br><br>Läuft um Mitternacht ab.</div>
+        </div>
+        <div class="template-card" style="padding:14px">
+          <div style="font-size:11px;font-weight:600;color:var(--text3);margin-bottom:8px;text-transform:uppercase;letter-spacing:0.05em">Launch Announcement</div>
+          <div style="font-size:13px;color:var(--text);line-height:1.6">Hey [Name],<br><br>es ist endlich live 🎉<br><br>[Produkt] — das hab ich für dich gebaut.<br><br>Mehr hier: [Link]</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== SKOOL ========== -->
+  <div id="page-skool" class="page">
+    <div class="page-content">
+      <div class="page-title"><span class="page-emoji">🎓</span> Skool</div>
+      <div class="page-desc">Community-Content, Posts und Event-Planung für Skool.</div>
+
+      <div class="section-title">Content Plan</div>
+      <table class="db-table" style="margin-bottom:24px">
+        <thead><tr><th>Post-Idee</th><th>Format</th><th>Datum</th><th>Status</th></tr></thead>
+        <tbody>
+          <tr><td>Wöchentlicher Tipp #12</td><td>Text</td><td>Mo 23.06.</td><td><span class="badge badge-amber">Geplant</span></td></tr>
+          <tr><td>AMA Session</td><td>Live Event</td><td>Mi 25.06.</td><td><span class="badge badge-red">In Arbeit</span></td></tr>
+          <tr><td>Case Study – Mitglied</td><td>Post</td><td>Fr 27.06.</td><td><span class="badge badge-gray">Idee</span></td></tr>
+        </tbody>
+      </table>
+
+      <div class="section-title">Event Planung</div>
+      <div class="kanban" style="grid-template-columns:repeat(3,1fr)">
+        <div class="kanban-col"><div class="kanban-col-header">Geplant</div><div class="kanban-card"><div class="kanban-card-title">AMA Session</div><div class="kanban-card-meta">Mi 25.06. · 18 Uhr</div></div></div>
+        <div class="kanban-col"><div class="kanban-col-header">In Vorbereitung</div><div class="kanban-card"><div class="kanban-card-title">Workshop: Ads Setup</div><div class="kanban-card-meta">Juli 2025</div></div></div>
+        <div class="kanban-col"><div class="kanban-col-header">Ideen</div><div class="kanban-card"><div class="kanban-card-title">Mitglieder Spotlight</div><div class="kanban-card-meta">Noch kein Datum</div></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== META ADS ========== -->
+  <div id="page-ads" class="page">
+    <div class="page-content">
+      <div class="page-title"><span class="page-emoji">📢</span> Meta Ads</div>
+      <div class="page-desc">Alle laufenden und geplanten Ads — Performance, Creatives und ROAS.</div>
+
+      <div class="db-header">
+        <div class="db-title">📢 Ads Datenbank</div>
+        <div class="db-views">
+          <button class="view-btn active">☰ Alle</button>
+          <button class="view-btn">🏆 Winning Ads</button>
+          <button class="view-btn">🧪 Testing</button>
+        </div>
+      </div>
+
+      <table class="db-table" style="margin-bottom:24px">
+        <thead><tr><th>Ad Name</th><th>Kampagne</th><th>Funnel Stage</th><th>Spend</th><th>ROAS</th><th>Status</th></tr></thead>
+        <tbody>
+          <tr><td>Sommer-Reel v3</td><td>Sommer Sale</td><td><span class="badge badge-amber">TOF</span></td><td>€380</td><td>4,2x</td><td><span class="badge badge-green">Live</span></td></tr>
+          <tr><td>Testimonial Ad v1</td><td>Sommer Sale</td><td><span class="badge badge-blue">MOF</span></td><td>€210</td><td>3,1x</td><td><span class="badge badge-green">Live</span></td></tr>
+          <tr><td>Cart Abandonment</td><td>Retargeting</td><td><span class="badge badge-purple">BOF</span></td><td>€95</td><td>6,8x</td><td><span class="badge badge-green">Live</span></td></tr>
+          <tr><td>New Hook Test</td><td>Produkt X</td><td><span class="badge badge-amber">TOF</span></td><td>€50</td><td>1,9x</td><td><span class="badge badge-red">Testing</span></td></tr>
+        </tbody>
+      </table>
+
+      <div class="section-title">Performance Übersicht</div>
+      <div class="kpi-grid">
+        <div class="kpi-card green"><div class="kpi-label">Gesamt Spend</div><div class="kpi-value">€735</div><div class="kpi-delta up">Diese Woche</div></div>
+        <div class="kpi-card amber"><div class="kpi-label">Ø ROAS</div><div class="kpi-value">3,4x</div><div class="kpi-delta up">↑ +0,3 ggü. Vorwoche</div></div>
+        <div class="kpi-card purple"><div class="kpi-label">Aktive Ads</div><div class="kpi-value">4</div><div class="kpi-delta" style="color:var(--text3)">1 im Test</div></div>
+        <div class="kpi-card red"><div class="kpi-label">Umsatz via Ads</div><div class="kpi-value">€2.499</div><div class="kpi-delta up">↑ Diese Woche</div></div>
+      </div>
+
+      <div class="divider"></div>
+      <div class="callout"><span class="callout-icon">🏆</span><div><strong>Winning Ad Kriterien:</strong> ROAS > 3x über 7 Tage, Mindest-Spend €100, CTR > 2%. Winning Ads erhalten erhöhtes Budget-Scaling.</div></div>
+    </div>
+  </div>
+
+  <!-- ========== SEO ========== -->
+  <div id="page-seo" class="page">
+    <div class="page-content">
+      <div class="page-title"><span class="page-emoji">🔍</span> SEO &amp; Blog</div>
+      <div class="page-desc">Keyword-Recherche, Artikel-Planung und Ranking-Tracking.</div>
+
+      <table class="db-table">
+        <thead><tr><th>Titel</th><th>Keyword</th><th>Suchvolumen</th><th>Status</th><th>Ranking</th><th>URL</th></tr></thead>
+        <tbody>
+          <tr><td>Wie du deinen ROAS verdoppelst</td><td>ROAS verbessern</td><td>1.200/Mo</td><td><span class="badge badge-green">Live</span></td><td>#4</td><td><span style="color:var(--blue);font-size:12px">/blog/roas</span></td></tr>
+          <tr><td>Black Friday Marketing Strategie</td><td>Black Friday Marketing</td><td>3.400/Mo</td><td><span class="badge badge-red">Writing</span></td><td>—</td><td>—</td></tr>
+          <tr><td>Email Marketing Anfänger Guide</td><td>Email Marketing lernen</td><td>890/Mo</td><td><span class="badge badge-gray">Idee</span></td><td>—</td><td>—</td></tr>
+          <tr><td>Instagram Reels Strategie 2025</td><td>Instagram Reels Strategie</td><td>2.100/Mo</td><td><span class="badge badge-gray">Idee</span></td><td>—</td><td>—</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ========== PRODUKTE ========== -->
+  <div id="page-produkte" class="page">
+    <div class="page-content">
+      <div class="page-title"><span class="page-emoji">📦</span> Produkte</div>
+      <div class="page-desc">Alle Produkte — von der Idee bis zum Launch.</div>
+
+      <table class="db-table" style="margin-bottom:24px">
+        <thead><tr><th>Name</th><th>Kategorie</th><th>Zielgruppe</th><th>Positionierung</th><th>Status</th></tr></thead>
+        <tbody>
+          <tr><td>Produkt A</td><td>Digital</td><td>Selbstständige</td><td>All-in-one Marketing Tool</td><td><span class="badge badge-green">Live</span></td></tr>
+          <tr><td>Produkt X</td><td>Kurs</td><td>E-Commerce Einsteiger</td><td>Schnellster Weg zum ersten Sale</td><td><span class="badge badge-red">Entwicklung</span></td></tr>
+          <tr><td>Produkt Z</td><td>Physical</td><td>TBD</td><td>TBD</td><td><span class="badge badge-gray">Idee</span></td></tr>
+        </tbody>
+      </table>
+
+      <div class="section-title">Produkt-Seiten-Struktur</div>
+      <div class="callout"><span class="callout-icon">📌</span><div>Jedes Produkt hat eine eigene Unterseite mit: Produktbeschreibung · USP · Packaging · Pricing</div></div>
+    </div>
+  </div>
+
+  <!-- ========== PACKAGING ========== -->
+  <div id="page-packaging" class="page">
+    <div class="page-content">
+      <div class="page-title"><span class="page-emoji">🎁</span> Packaging</div>
+      <div class="page-desc">Designs, Druckdaten und Lieferanten für die Verpackung.</div>
+
+      <div class="section-title">Designs</div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:24px">
+        <div class="template-card" style="padding:14px;text-align:center">
+          <div style="height:80px;background:var(--bg3);border-radius:var(--radius);margin-bottom:10px;display:flex;align-items:center;justify-content:center;color:var(--text3);font-size:12px">Design V1</div>
+          <div style="font-size:12px;font-weight:500">Version 1</div>
+          <div style="font-size:11px;color:var(--text3)">Approved</div>
+        </div>
+        <div class="template-card" style="padding:14px;text-align:center">
+          <div style="height:80px;background:var(--bg3);border-radius:var(--radius);margin-bottom:10px;display:flex;align-items:center;justify-content:center;color:var(--text3);font-size:12px">Design V2</div>
+          <div style="font-size:12px;font-weight:500">Version 2</div>
+          <div style="font-size:11px;color:var(--amber)">In Review</div>
+        </div>
+        <div class="template-card" style="padding:14px;text-align:center;border-style:dashed;cursor:pointer">
+          <div style="height:80px;background:var(--bg2);border-radius:var(--radius);margin-bottom:10px;display:flex;align-items:center;justify-content:center;color:var(--text3);font-size:24px">+</div>
+          <div style="font-size:12px;color:var(--text3)">Neues Design</div>
+        </div>
+      </div>
+
+      <div class="section-title">Lieferanten</div>
+      <table class="db-table">
+        <thead><tr><th>Lieferant</th><th>Material</th><th>Mindestmenge</th><th>Kontakt</th><th>Status</th></tr></thead>
+        <tbody>
+          <tr><td>DruckHaus GmbH</td><td>Karton, Offset</td><td>500 Stk.</td><td>info@druckhaus.de</td><td><span class="badge badge-green">Aktiv</span></td></tr>
+          <tr><td>EcoPackaging</td><td>Recycling</td><td>1.000 Stk.</td><td>TBD</td><td><span class="badge badge-amber">Angebot ausstehend</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ========== NAMING ========== -->
+  <div id="page-naming" class="page">
+    <div class="page-content">
+      <div class="page-title"><span class="page-emoji">✏️</span> Naming</div>
+      <div class="page-desc">Produkt- und Kampagnennamen brainstormen und bewerten.</div>
+
+      <table class="db-table">
+        <thead><tr><th>Name Idee</th><th>Produkt</th><th>Bewertung</th><th>Status</th><th>Notiz</th></tr></thead>
+        <tbody>
+          <tr><td>FlowKit</td><td>Produkt X</td><td>⭐⭐⭐⭐</td><td><span class="badge badge-amber">In Prüfung</span></td><td>Domain verfügbar</td></tr>
+          <tr><td>LaunchBase</td><td>Produkt X</td><td>⭐⭐⭐</td><td><span class="badge badge-gray">Idee</span></td><td>Ähnliche Marke existiert</td></tr>
+          <tr><td>GrowStack</td><td>Produkt X</td><td>⭐⭐</td><td><span class="badge badge-red">Abgelehnt</span></td><td>Zu generisch</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ========== SHOP ========== -->
+  <div id="page-shop" class="page">
+    <div class="page-content">
+      <div class="page-title"><span class="page-emoji">🛒</span> Shop Optimierung</div>
+      <div class="page-desc">Banner, Landingpages und A/B Tests für maximale Conversion.</div>
+
+      <div class="section-title">Banner Planung</div>
+      <table class="db-table" style="margin-bottom:24px">
+        <thead><tr><th>Banner</th><th>Aktion</th><th>Zeitraum</th><th>Status</th></tr></thead>
+        <tbody>
+          <tr><td>Sommer Sale Hero Banner</td><td>Sale −30%</td><td>01.07 – 15.07</td><td><span class="badge badge-red">In Arbeit</span></td></tr>
+          <tr><td>Black Friday Countdown</td><td>BF Promo</td><td>Nov</td><td><span class="badge badge-gray">Idee</span></td></tr>
+        </tbody>
+      </table>
+
+      <div class="section-title">A/B Tests</div>
+      <table class="db-table">
+        <thead><tr><th>Test Name</th><th>Hypothese</th><th>Ergebnis</th><th>Status</th></tr></thead>
+        <tbody>
+          <tr><td>CTA Button Farbe</td><td>Grün konvertiert besser als Schwarz</td><td>+12% CVR mit Grün</td><td><span class="badge badge-green">Abgeschlossen</span></td></tr>
+          <tr><td>Produktseite Layout</td><td>Testimonials above the fold</td><td>Läuft noch</td><td><span class="badge badge-amber">Laufend</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ========== SWIPE FILE ========== -->
+  <div id="page-swipe" class="page">
+    <div class="page-content">
+      <div class="page-title"><span class="page-emoji">🗂️</span> Swipe File &amp; Inspiration</div>
+      <div class="page-desc">Gute Ads, Landingpages und Emails sammeln und analysieren.</div>
+
+      <div class="callout"><span class="callout-icon">💡</span><div>Hier gute Beispiele sammeln. Was macht ein Competitor gut? Was kann man adaptieren?</div></div>
+
+      <table class="db-table">
+        <thead><tr><th>Name</th><th>Typ</th><th>Plattform</th><th>Warum gut?</th><th>Link</th></tr></thead>
+        <tbody>
+          <tr><td>Nike BF Ad 2024</td><td><span class="badge badge-amber">Ad</span></td><td>Instagram</td><td>Perfekter Hook, emotionale Story</td><td><span style="color:var(--blue);font-size:12px">Link</span></td></tr>
+          <tr><td>Shopify LP Studie</td><td><span class="badge badge-blue">Landingpage</span></td><td>Web</td><td>Klare Headline, starke CTA</td><td><span style="color:var(--blue);font-size:12px">Link</span></td></tr>
+          <tr><td>Klaviyo Welcome Email</td><td><span class="badge badge-green">Email</span></td><td>Email</td><td>Persönlicher Ton, hohe CTR</td><td><span style="color:var(--blue);font-size:12px">Link</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ========== SOPs ========== -->
+  <div id="page-sops" class="page">
+    <div class="page-content">
+      <div class="page-title"><span class="page-emoji">📋</span> SOPs &amp; Prozesse</div>
+      <div class="page-desc">Standardisierte Abläufe für das gesamte Team — damit jeder weiß, was zu tun ist.</div>
+
+      <div class="sop-grid">
+        <div class="sop-card">
+          <div class="sop-card-title">🚀 Launch Prozess</div>
+          <div class="sop-card-desc">Kompletter Ablauf von der Idee bis zum Launch-Tag.</div>
+          <div class="sop-steps">
+            <div class="sop-step"><span class="step-num">1</span> Zielgruppe &amp; Angebot definieren</div>
+            <div class="sop-step"><span class="step-num">2</span> Content Plan erstellen (−4 Wochen)</div>
+            <div class="sop-step"><span class="step-num">3</span> Ads vorbereiten &amp; Creatives briefen</div>
+            <div class="sop-step"><span class="step-num">4</span> Waitlist / Email Sequenz aufsetzen</div>
+            <div class="sop-step"><span class="step-num">5</span> Launch-Tag: Live-Monitoring</div>
+            <div class="sop-step"><span class="step-num">6</span> Post-Launch: Learnings dokumentieren</div>
+          </div>
+        </div>
+        <div class="sop-card">
+          <div class="sop-card-title">📧 Newsletter SOP</div>
+          <div class="sop-card-desc">Wöchentlicher Newsletter Ablauf.</div>
+          <div class="sop-steps">
+            <div class="sop-step"><span class="step-num">1</span> Thema &amp; Ziel festlegen (Mo)</div>
+            <div class="sop-step"><span class="step-num">2</span> Hook &amp; Body schreiben (Di)</div>
+            <div class="sop-step"><span class="step-num">3</span> CTA &amp; Links einfügen (Mi)</div>
+            <div class="sop-step"><span class="step-num">4</span> Korrekturlesen &amp; Test senden (Do)</div>
+            <div class="sop-step"><span class="step-num">5</span> Versand (Di–Do 10–12 Uhr)</div>
+            <div class="sop-step"><span class="step-num">6</span> Open Rate &amp; CTR tracken</div>
+          </div>
+        </div>
+        <div class="sop-card">
+          <div class="sop-card-title">📢 Ads Setup SOP</div>
+          <div class="sop-card-desc">Meta Ads Kampagne korrekt aufsetzen.</div>
+          <div class="sop-steps">
+            <div class="sop-step"><span class="step-num">1</span> Ziel &amp; Funnel Stage definieren</div>
+            <div class="sop-step"><span class="step-num">2</span> Zielgruppen segmentieren</div>
+            <div class="sop-step"><span class="step-num">3</span> Creative aus Library auswählen</div>
+            <div class="sop-step"><span class="step-num">4</span> Budget &amp; Bidding Strategy</div>
+            <div class="sop-step"><span class="step-num">5</span> Pixel &amp; Tracking prüfen</div>
+            <div class="sop-step"><span class="step-num">6</span> Launch &amp; Monitoring</div>
+          </div>
+        </div>
+        <div class="sop-card">
+          <div class="sop-card-title">🎬 Content Workflow</div>
+          <div class="sop-card-desc">Von der Idee bis zur Veröffentlichung.</div>
+          <div class="sop-steps">
+            <div class="sop-step"><span class="step-num">1</span> Idee in Kalender eintragen</div>
+            <div class="sop-step"><span class="step-num">2</span> Script / Copy erstellen</div>
+            <div class="sop-step"><span class="step-num">3</span> Drehen / Designen</div>
+            <div class="sop-step"><span class="step-num">4</span> Edit &amp; Review</div>
+            <div class="sop-step"><span class="step-num">5</span> Freigabe einholen</div>
+            <div class="sop-step"><span class="step-num">6</span> Upload &amp; Status → "Live"</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== REPORTING ========== -->
+  <div id="page-reporting" class="page">
+    <div class="page-content">
+      <div class="page-title"><span class="page-emoji">📊</span> Reporting</div>
+      <div class="page-desc">Monatliche und wöchentliche Performance-Übersichten.</div>
+
+      <div class="section-title">Reports Datenbank</div>
+      <table class="db-table" style="margin-bottom:24px">
+        <thead><tr><th>Zeitraum</th><th>Umsatz</th><th>ROAS</th><th>Top Kanal</th><th>Learnings</th></tr></thead>
+        <tbody>
+          <tr><td>Mai 2025</td><td>€28.450</td><td>3,8x</td><td>Email</td><td>Email Segmentierung +22%</td></tr>
+          <tr><td>April 2025</td><td>€21.200</td><td>2,9x</td><td>Instagram</td><td>Reels > Posts bei Reichweite</td></tr>
+          <tr><td>März 2025</td><td>€18.700</td><td>3,2x</td><td>Ads</td><td>TOF Creatives brauchen Refresh</td></tr>
+        </tbody>
+      </table>
+
+      <div class="section-title">Umsatz Trend</div>
+      <div class="bar-chart">
+        <div class="bar-col"><div class="bar-fill" style="height:40px"></div><div class="bar-label">Jan</div></div>
+        <div class="bar-col"><div class="bar-fill" style="height:48px"></div><div class="bar-label">Feb</div></div>
+        <div class="bar-col"><div class="bar-fill" style="height:56px"></div><div class="bar-label">Mär</div></div>
+        <div class="bar-col"><div class="bar-fill" style="height:64px"></div><div class="bar-label">Apr</div></div>
+        <div class="bar-col"><div class="bar-fill" style="height:72px"></div><div class="bar-label">Mai</div></div>
+        <div class="bar-col"><div class="bar-fill" style="height:60px;opacity:0.5"></div><div class="bar-label">Jun*</div></div>
+      </div>
+      <div style="font-size:11px;color:var(--text3);margin-top:4px">*Jun laufend</div>
+    </div>
+  </div>
+
+  <!-- ========== FEIERTAGE ========== -->
+  <div id="page-feiertage" class="page">
+    <div class="page-content">
+      <div class="page-title"><span class="page-emoji">🗓️</span> Feiertage &amp; Events</div>
+      <div class="page-desc">Alle marketing-relevanten Feiertage und E-Commerce Events im Überblick.</div>
+
+      <div class="holiday-grid">
+        <div class="holiday-list">
+          <div class="holiday-list-header">🇩🇪 Deutschland — Feiertage</div>
+          <div class="holiday-item"><span>Neujahr</span><span class="holiday-date">01.01.</span></div>
+          <div class="holiday-item"><span>Karfreitag</span><span class="holiday-date">18.04.2025</span></div>
+          <div class="holiday-item"><span>Ostern</span><span class="holiday-date">20.04.2025</span></div>
+          <div class="holiday-item"><span>Tag der Arbeit</span><span class="holiday-date">01.05.</span></div>
+          <div class="holiday-item"><span>Christi Himmelfahrt</span><span class="holiday-date">29.05.2025</span></div>
+          <div class="holiday-item"><span>Pfingsten</span><span class="holiday-date">08.06.2025</span></div>
+          <div class="holiday-item"><span>Tag der Deutschen Einheit</span><span class="holiday-date">03.10.</span></div>
+          <div class="holiday-item"><span>1. Weihnachtstag</span><span class="holiday-date">25.12.</span></div>
+          <div class="holiday-item"><span>2. Weihnachtstag</span><span class="holiday-date">26.12.</span></div>
+          <div class="holiday-item"><span>Silvester</span><span class="holiday-date">31.12.</span></div>
+        </div>
+        <div class="holiday-list">
+          <div class="holiday-list-header">🛒 E-Commerce Events</div>
+          <div class="holiday-item"><span style="font-weight:500">Singles Day</span><span class="holiday-date">11.11.</span></div>
+          <div class="holiday-item"><span style="font-weight:500">Black Friday</span><span class="holiday-date">28.11.2025</span></div>
+          <div class="holiday-item"><span style="font-weight:500">Cyber Monday</span><span class="holiday-date">01.12.2025</span></div>
+          <div class="holiday-item"><span>Sommer Sale Start</span><span class="holiday-date">01.07.</span></div>
+          <div class="holiday-item"><span>Winter Sale Start</span><span class="holiday-date">26.12.</span></div>
+          <div class="holiday-item"><span>Valentinstag</span><span class="holiday-date">14.02.</span></div>
+          <div class="holiday-item"><span>Muttertag</span><span class="holiday-date">11.05.2025</span></div>
+          <div class="holiday-item"><span>Back to School</span><span class="holiday-date">Aug/Sep</span></div>
+          <div class="holiday-item"><span>Weihnachts Pre-Sale</span><span class="holiday-date">01.12.</span></div>
+          <div class="holiday-item"><span>Neujahrs Sale</span><span class="holiday-date">01.01.</span></div>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+      <div class="info-box">
+        <span style="font-size:18px">📌</span>
+        <div><strong>Wichtig für die Planung</strong>Für Black Friday, Singles Day und Weihnachten mindestens 6–8 Wochen vorher mit der Kampagnenplanung starten. Für kleinere Events wie Valentinstag 3–4 Wochen.</div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /main -->
+
+<script>
+function showPage(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  const page = document.getElementById('page-' + id);
+  if (page) page.classList.add('active');
+
+  const names = {
+    dashboard: 'Dashboard', kalender: 'Marketing Kalender', kampagnen: 'Kampagnen & Launches',
+    content: 'Content Library', instagram: 'Instagram', newsletter: 'Newsletter',
+    whatsapp: 'WhatsApp', skool: 'Skool', ads: 'Meta Ads', seo: 'SEO & Blog',
+    produkte: 'Produkte', packaging: 'Packaging', naming: 'Naming',
+    shop: 'Shop Optimierung', swipe: 'Swipe File', sops: 'SOPs & Prozesse',
+    reporting: 'Reporting', feiertage: 'Feiertage'
+  };
+
+  document.getElementById('breadcrumb').innerHTML =
+    '<span>Marketing Hub</span> <span style="color:var(--text3)">›</span> <span>' + (names[id] || id) + '</span>';
+
+  document.querySelectorAll('.nav-item').forEach(n => {
+    if (n.getAttribute('onclick') === "showPage('" + id + "')") n.classList.add('active');
+  });
+
+  document.getElementById('main').scrollTop = 0;
+}
+
+function toggleNav(id) {
+  const el = document.getElementById(id);
+  const arrow = document.getElementById('arrow-' + id.replace('nav-', ''));
+  if (!el) return;
+  const open = el.classList.toggle('open');
+  if (arrow) arrow.classList.toggle('open', open);
+}
+
+function switchView(viewId) {
+  document.querySelectorAll('[id^="cal-view-"]').forEach(v => v.style.display = 'none');
+  const el = document.getElementById(viewId);
+  if (el) el.style.display = '';
+  document.querySelectorAll('.view-btn').forEach(b => b.classList.remove('active'));
+  event.target.classList.add('active');
+}
+</script>
+</body>
+</html>
